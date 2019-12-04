@@ -99,9 +99,11 @@ line2_information = lines[1].split(',')
 wire1 = line_to_set(line1_information)
 wire2 = line_to_set(line2_information)
 intersections = wire1 & wire2
-puts min_manhattan_distance(intersections)
+result = min_manhattan_distance(intersections)
+puts "First answer: #{result}"
 
 # Second puzzle.
 wire1_lengths = wire_intersection_lengths(intersections, line1_information)
 wire2_lengths = wire_intersection_lengths(intersections, line2_information)
-puts min_intersection_length(intersections, wire1_lengths, wire2_lengths)
+result = min_intersection_length(intersections, wire1_lengths, wire2_lengths)
+puts "Second answer: #{result}"

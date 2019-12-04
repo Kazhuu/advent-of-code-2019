@@ -16,4 +16,7 @@ assert_equal(966, fuel_needed(1969))
 assert_equal(50346, fuel_needed(100756))
 
 module_masses = File.readlines('input')
-puts module_masses.reduce(0) { |total, mass| total += fuel_needed(mass.to_i) }
+result = module_masses.reduce(0) { |total, mass| total += mass.to_i / 3 - 2 }
+puts "First answer: #{result}"
+result = module_masses.reduce(0) { |total, mass| total += fuel_needed(mass.to_i) }
+puts "Second answer: #{result}"

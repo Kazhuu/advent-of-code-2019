@@ -15,10 +15,13 @@ def next_increment(number)
   number
 end
 
+# Return true if password contains two consecutive digits.
 def two_consecutive_digits?(password)
   password.to_s.match?(/(\d)\1/)
 end
 
+# Return true if password only contains one pair of two consecutive digits.
+# Precondition is that password has digits in increasing order.
 def only_two_consecutive_digits?(password)
   result = password.digits.inject(Hash.new(0)) { |result, digit| result[digit] += 1; result}
   result.has_value?(2)

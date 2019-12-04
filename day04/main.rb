@@ -2,6 +2,8 @@ require 'test/unit'
 
 extend Test::Unit::Assertions
 
+# Increment numbers so that following digits appear in increasing order.
+# For instance 9 will become 11 instead of 10.
 def next_increment(number)
   index = -1
   number.digits.reverse.each_cons(2) do |leading, trailing|

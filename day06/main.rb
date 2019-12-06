@@ -1,7 +1,3 @@
-require 'test/unit'
-
-extend Test::Unit::Assertions
-
 class Node
   attr_reader :name
   attr_accessor :parent, :depth, :children
@@ -57,11 +53,14 @@ orbits = File.readlines('input').map(&:strip)
 objects = parse_orbit_map(orbits)
 calculate_depth(objects['COM'], 0)
 
+# First puzzle.
 checksum = 0
 objects.each do |_key, value|
   checksum += value.depth
 end
 puts "First puzzle: #{checksum}"
+
+# Second puzzle.
 path_to_you = path_to_node(objects['YOU'])
 path_to_san = path_to_node(objects['SAN'])
 common_nodes = path_to_you & path_to_san

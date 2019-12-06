@@ -63,7 +63,7 @@ def part_two(ram)
   end
 end
 
-ram = File.read('input').split(',').map { |value| value.to_i }
+ram = File.read('input').split(',').map(&:to_i)
 puts "first puzzle:"
 part_one(ram.dup)
 puts "second puzzle:"

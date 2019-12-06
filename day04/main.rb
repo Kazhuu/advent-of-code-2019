@@ -43,7 +43,7 @@ assert_equal(111, next_increment(109))
 assert_equal(356666, next_increment(356261))
 
 input = File.read('input')
-start, stop = input.split('-').map { |value| value.to_i }
+start, stop = input.split('-').map(&:to_i)
 result = count_valid_passwords(start, stop, Kernel.method(:two_consecutive_digits?))
 puts "First answer: #{result}"
 result = count_valid_passwords(start, stop, Kernel.method(:only_two_consecutive_digits?))

@@ -4,12 +4,12 @@ extend Test::Unit::Assertions
 
 class Node
   attr_reader :name
-  attr_accessor :depth
-  attr_accessor :children
+  attr_accessor :parent, :depth, :children
 
   def initialize(name)
     @name = name
     @children = []
+    @parent = nil
   end
 end
 
@@ -30,9 +30,9 @@ def parse_orbit_map(input)
                    Node.new(second)
                  end
     first_node.children.push(second_node)
+    second_node.parent = first_node
     objects[first] = first_node
     objects[second] = second_node
-    puts first
   end
   objects
 end
@@ -44,6 +44,15 @@ def calculate_depth(node, depth)
   end
 end
 
+def path_to_node(node)
+  path = []
+  while not node.parent.nil? do
+    path.append(node.parent)
+    node = node.parent
+  end
+  path
+end
+
 orbits = File.readlines('input').map(&:strip)
 objects = parse_orbit_map(orbits)
 calculate_depth(objects['COM'], 0)
@@ -52,4 +61,9 @@ checksum = 0
 objects.each do |_key, value|
   checksum += value.depth
 end
-puts checksum
+puts "First puzzle: #{checksum}"
+path_to_you = path_to_node(objects['YOU'])
+path_to_san = path_to_node(objects['SAN'])
+common_nodes = path_to_you & path_to_san
+steps = (path_to_san - common_nodes).count + (path_to_you - common_nodes).count
+puts "Second puzzle: #{steps}"

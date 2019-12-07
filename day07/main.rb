@@ -1,5 +1,3 @@
-require 'test/unit'
-
 class Amplifier
   attr_reader :phase
   attr_accessor :ram, :pointer, :halted, :input, :output, :phase_used

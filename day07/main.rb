@@ -1,6 +1,6 @@
 class Amplifier
   attr_reader :phase
-  attr_accessor :ram, :pointer, :halted, :input, :output, :phase_used
+  attr_accessor :ram, :pointer, :halted, :input, :output
 
   def initialize(ram, phase)
     @ram = ram
@@ -10,6 +10,15 @@ class Amplifier
     @input = 0
     @output = 0
     @phase_used = false
+  end
+
+  def get_input
+    unless @phase_used
+      @phase_used = true
+      @phase
+    else
+      @input
+    end
   end
 end
 
@@ -90,12 +99,7 @@ def execute_program(amplifier)
     elsif opcode == 2
       amplifier.pointer = multiply_opcode(amplifier.ram, amplifier.pointer, arg1_immediate, arg2_immediate)
     elsif opcode == 3
-      unless amplifier.phase_used
-        amplifier.pointer = input_opcode(amplifier.ram, amplifier.pointer, amplifier.phase)
-        amplifier.phase_used = true
-      else
-        amplifier.pointer = input_opcode(amplifier.ram, amplifier.pointer, amplifier.input)
-      end
+        amplifier.pointer = input_opcode(amplifier.ram, amplifier.pointer, amplifier.get_input)
     elsif opcode == 4
       amplifier.pointer, amplifier.output = output_opcode(amplifier.ram, amplifier.pointer, arg1_immediate)
       return

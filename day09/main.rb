@@ -159,7 +159,13 @@ assert_equal([1125899906842624], test.output)
 
 # First puzzle.
 ram = File.read('input').split(',').map(&:to_i)
-program = IntCore.new(ram)
+program = IntCore.new(ram.dup)
 program.input = [1]
 program.execute
 puts "First puzzle: #{program.output.first}"
+
+# Second puzzle.
+program = IntCore.new(ram.dup)
+program.input = [2]
+program.execute
+puts "Second puzzle: #{program.output.first}"

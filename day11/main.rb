@@ -164,23 +164,51 @@ def next_direction
   }
 end
 
-area = Hash.new(0)
-x = 0
-y = 0
-direction = Direction::UP
-ram = File.read('input').split(',').map(&:to_i)
-program = IntCore.new(ram.dup)
-
-until program.halted do
-  point = [x, y]
-  program.input = area[point]
-  program.execute
-  color = program.output
-  area[point] = color
-  program.execute
-  turn = program.output
-  dx, dy, direction = next_direction[[turn, direction]]
-  x += dx
-  y += dy
+def execute_painter(ram, first_input)
+  x = 0
+  y = 0
+  direction = Direction::UP
+  area = Hash.new(0)
+  area[[0, 0]] = first_input
+  program = IntCore.new(ram.dup)
+  until program.halted do
+    point = [x, y]
+    program.input = area[point]
+    program.execute
+    color = program.output
+    area[point] = color
+    program.execute
+    turn = program.output
+    dx, dy, direction = next_direction[[turn, direction]]
+    x += dx
+    y += dy
+  end
+  area
 end
+
+def paint_area(area)
+  width, _ = area.keys.max_by { |point| point.first }
+  _, heigth = area.keys.min_by { |point| point.last }
+  0.downto(heigth).each do |y|
+    line = []
+    (0..width).each do |x|
+      unless area[[x, y]].zero?
+        line.append('#')
+      else
+        line.append(' ')
+      end
+    end
+    puts line.join
+  end
+end
+
+ram = File.read('input').split(',').map(&:to_i)
+
+# First puzzle.
+area = execute_painter(ram.dup, 0)
 puts "First puzzle: #{area.count}"
+
+# Second puzzle
+area = execute_painter(ram.dup ,1)
+puts "Second puzzle:"
+paint_area(area)

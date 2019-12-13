@@ -142,15 +142,50 @@ class IntCore
   end
 end
 
+def joy_input(paddle, ball)
+  if ball > paddle
+    1
+  elsif ball == paddle
+    0
+  else
+    -1
+  end
+end
+
 ram = File.read('input').split(',').map(&:to_i)
-program = IntCore.new(ram)
-tiles = {}
+
+# First puzzle.
+program = IntCore.new(ram.dup)
+tiles = []
 until program.halted do
-  program.execute
-  program.execute
-  program.execute
+  3.times do
+    program.execute
+  end
   x, y, tile = program.output
   program.output = []
-  tiles[[x, y]] = tile
+  tiles.append(tile)
 end
-puts "First puzzle: #{tiles.values.count(2)}"
+puts "First puzzle: #{tiles.count(2)}"
+
+# Second puzzle.
+ram[0] = 2 # Free to play.
+program = IntCore.new(ram)
+paddle = 0
+ball = 0
+score = 0
+until program.halted do
+  program.input = joy_input(paddle, ball)
+  3.times do
+    program.execute
+  end
+  x, y, tile = program.output
+  program.output = []
+  if tile == 3 # paddle drawn.
+    paddle = x
+  elsif tile == 4 # ball drawn.
+    ball = x
+  elsif x == -1 and y == 0 # score drawn.
+    score = tile
+  end
+end
+puts "Second puzzle: #{score}"

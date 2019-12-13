@@ -17,7 +17,7 @@ class IntCore
     @output = []
   end
 
-  def execute(until_end = true)
+  def execute()
     while @ram[@pointer] != 99 do
       opcode, modes = decode_opcode
       if opcode == 1
@@ -28,7 +28,6 @@ class IntCore
         input_opcode(modes[0])
       elsif opcode == 4
         output_opcode(modes[0])
-        return unless until_end
       elsif opcode == 5
         jump_if_true(modes)
       elsif opcode == 6

@@ -142,15 +142,39 @@ class IntCore
   end
 end
 
+
+def pulled_spot?(ram, x, y)
+  program = IntCore.new(ram.dup)
+  program.input = [y, x]
+  program.execute
+  program.output
+end
+
 # First puzzle.
 ram = File.read('input').split(',').map(&:to_i)
 coordinates = {}
 (0...50).each do |y|
   (0...50).each do |x|
-    program = IntCore.new(ram.dup)
-    program.input = [y, x]
-    program.execute
-    coordinates[[x, y]] = program.output
+    coordinates[[x, y]] = pulled_spot?(ram, x, y)
   end
 end
 puts "First puzzle: #{coordinates.values.count(1)}"
+
+# Second puzzle.
+x = 0
+y = 99
+while true
+  bottom_left_corner = pulled_spot?(ram, x, y)
+  unless bottom_left_corner.zero?
+    top_rigth_corner = pulled_spot?(ram, x + 99, y - 99)
+    unless top_rigth_corner.zero?
+      break
+    else
+      y += 1
+    end
+  else
+    x += 1
+  end
+end
+
+puts "Second puzzle: #{x * 10_000 + y - 99}"

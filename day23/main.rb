@@ -1,5 +1,5 @@
 class IntCore
-  attr_accessor :ram, :pointer, :relative_base, :halted, :input, :output
+  attr_accessor :ram, :pointer, :relative_base, :halted, :input, :output, :idle
 
   def initialize(ram)
     @ram = Hash.new(0)
@@ -11,6 +11,7 @@ class IntCore
     @halted = false
     @input = []
     @output = []
+    @idle = false
   end
 
   def step()
@@ -55,6 +56,7 @@ class IntCore
 
   def input_opcode(mode)
     input = @input.shift || -1
+    @idle = input == -1
     write_value(@ram[@pointer + 1], mode, input)
     @pointer += 2
   end
@@ -142,15 +144,27 @@ class IntCore
   end
 end
 
-ram = File.read('input').split(',').map(&:to_i)
-computers = []
-addresses = Hash.new([])
-(0...50).each do |address|
-  computer = IntCore.new(ram.dup)
-  computer.input.append(address)
-  computers.push(computer)
+
+def create_computers(ram)
+  computers = []
+  (0...50).each do |address|
+    computer = IntCore.new(ram.dup)
+    computer.input.append(address)
+    computers.push(computer)
+  end
+  computers
 end
-until addresses[255].count == 2 do
+
+def network_idle?(computers)
+  computers.all? { |computer| computer.idle }
+end
+
+ram = File.read('input').split(',').map(&:to_i)
+computers = create_computers(ram)
+result_y = nil
+
+# First puzzle.
+while result_y.nil? do
   computers.each do |computer|
     computer.step
   end
@@ -161,11 +175,42 @@ until addresses[255].count == 2 do
       data = packet[1..]
       computer.output = []
       if address > 50
-        addresses[address] = data
+        result_y = data[1]
       else
         computers[address].input.append(*data)
       end
     end
   end
 end
-puts "First puzzle: #{addresses[255][1]}"
+puts "First puzzle: #{result_y}"
+
+# Second puzzle.
+computers = create_computers(ram)
+previous_y = nil
+nat_packet = nil
+found = false
+until found do
+  computers.each do |computer|
+    computer.step
+  end
+  computers.each do |computer|
+    if computer.output.count == 3
+      packet = computer.output
+      address = packet[0]
+      data = packet[1..]
+      computer.output = []
+      if address == 255
+        nat_packet = data
+      else
+        computers[address].input.append(*data)
+      end
+    end
+  end
+  if network_idle?(computers) and not nat_packet.nil?
+    computers.first.input.append(*nat_packet)
+    found = previous_y == nat_packet[1]
+    previous_y = nat_packet[1]
+    nat_packet = nil
+  end
+end
+puts "Second puzzle: #{previous_y}"
